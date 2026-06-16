@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokemon Battle</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            text-align: center;
+        }
+
+        .battle{
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        img{
+            width: 150px;
+            height: 150px;
+        }
+
+        .box{
+            border: 1px solid black;
+            padding: 10px;
+            width: 250px;
+        }
+
+        textarea{
+            width: 80%;
+            height: 80px;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        button{
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Pokemon Battle</h1>
+
+<button onclick="battle()">Battle</button>
+
+<div class="battle">
+
+    <div class="box">
+        <h3 id="name1"></h3>
+        <img id="img1" src="">
+        <p id="atk1"></p>
+    </div>
+
+    <div>
+        <h2>VS</h2>
+    </div>
+
+    <div class="box">
+        <h3 id="name2"></h3>
+        <img id="img2" src="">
+        <p id="atk2"></p>
+    </div>
+
+</div>
+
+<textarea id="result" readonly></textarea>
+
+<script>
+
+async function battle(){
+
+    try {
+
+        // Random Pokemon IDs
+        let p1 = Math.floor(Math.random() * 1025) + 1;
+        let p2 = Math.floor(Math.random() * 1025) + 1;
+
+        let r1 = await fetch(`https://pokeapi.co/api/v2/pokemon/${p1}`);
+        let d1 = await r1.json();
+
+        let r2 = await fetch(`https://pokeapi.co/api/v2/pokemon/${p2}`);
+        let d2 = await r2.json();
+
+        document.getElementById("img1").src =
+            d1.sprites.front_default;
+
+        document.getElementById("img2").src =
+            d2.sprites.front_default;
+
+        document.getElementById("name1").innerHTML =
+            d1.name.toUpperCase();
+
+        document.getElementById("name2").innerHTML =
+            d2.name.toUpperCase();
+
+        // Attack stat
+        let attack1 = d1.stats[1].base_stat;
+        let attack2 = d2.stats[1].base_stat;
+
+        document.getElementById("atk1").innerHTML =
+            "Attack: " + attack1;
+
+        document.getElementById("atk2").innerHTML =
+            "Attack: " + attack2;
+
+        if(attack1 > attack2){
+            document.getElementById("result").value =
+                `${d1.name.toUpperCase()} wins the battle!`;
+        }
+        else if(attack2 > attack1){
+            document.getElementById("result").value =
+                `${d2.name.toUpperCase()} wins the battle!`;
+        }
+        else{
+            document.getElementById("result").value =
+                "MATCH DRAW!";
+        }
+
+    } catch(error) {
+        document.getElementById("result").value =
+            "Error loading Pokémon data.";
+        console.error(error);
+    }
+}
+
+</script>
+
+</body>
+</html>
